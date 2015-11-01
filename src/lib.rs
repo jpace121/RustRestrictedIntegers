@@ -1,4 +1,4 @@
-use std::ops::{Add, Sub};
+use std::ops::{Add, Sub, Mul};
 
 pub struct LimitVal {
     val : u8,
@@ -67,9 +67,28 @@ impl Sub for LimitVal {
             Some(result)
         }
     }
-
 }
 
+impl Mul for LimitVal {
+    type Output = Option<LimitVal>;
+
+    fn mul(self, other: LimitVal) -> Option<LimitVal> {
+        let mut result: LimitVal = LimitVal::new()
+                                  .min(self.min)
+                                  .max(self.max)
+                                  .val(0)
+                                  .finalize(); //hack?
+        result.val = self.val * other.val;
+        if result.val > result.max {
+            None
+        } else if result.val < result.min {
+            None
+        }else{
+            Some(result)
+        }
+    }
+
+}
 
 #[cfg(test)]
 mod tests {
@@ -96,5 +115,13 @@ mod tests {
         
         let z = y - x;
         assert_eq!(z.unwrap().val,1);
+    }
+    #[test]
+    fn test_mul() {
+        let x: LimitVal = LimitVal::new().max(10).min(0).val(2).finalize();
+        let y: LimitVal = LimitVal::new().max(10).min(0).val(3).finalize();
+        
+        let z = y * x;
+        assert_eq!(z.unwrap().val,6);
     }
 }
