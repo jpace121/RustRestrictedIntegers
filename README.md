@@ -3,7 +3,7 @@
 A library which attempts to give Rust the ability to have custom types with
 limited ranges, ala ada.
 
-# Notes #
+## Notes ##
 The current approach isn't quite what I want.
 
 Preferrably, you would make a type and then declare items of that type. The max and min
