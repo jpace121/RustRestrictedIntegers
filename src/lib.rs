@@ -14,11 +14,6 @@ impl LimitVal {
             LimitVal{val: Err(val), min: 0, max: 10} //0 and 10 used for illustration
         }
     }
-    fn new_err(val : u8) -> LimitVal {
-        //returns val as none, should be private, only for inside the library.
-        //I think that there has to be a better way to do this.
-            LimitVal{val: Err(val), min: 0, max: 10} //0 and 10 used for illustration
-    }
 }
 
 impl Add for LimitVal {
