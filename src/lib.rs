@@ -1,23 +1,23 @@
 use std::ops::{Add, Sub, Mul};
 
 pub struct LimitVal {
-    val : Option<u8>,
+    val : Result<u8,u8>,
     min : u8, 
     max : u8
 }
 
 impl LimitVal {
     fn new(val:u8) -> LimitVal {
-        if(val > 0 && val < 10) { //0 and 10 replaced by macro for realz
-            LimitVal{val: Some(val), min: 0, max: 10} //0 and 10 used for illustration
+        if val > 0 && val < 10 { //0 and 10 replaced by macro for realz
+            LimitVal{val: Ok(val), min: 0, max: 10} //0 and 10 used for illustration
         } else {
-            LimitVal{val: None, min: 0, max: 10} //0 and 10 used for illustration
+            LimitVal{val: Err(val), min: 0, max: 10} //0 and 10 used for illustration
         }
     }
-    fn new_none() -> LimitVal {
-        //returns val as None, should be private, only for inside the library.
+    fn new_err(val : u8) -> LimitVal {
+        //returns val as none, should be private, only for inside the library.
         //I think that there has to be a better way to do this.
-            LimitVal{val: None, min: 0, max: 10} //0 and 10 used for illustration
+            LimitVal{val: Err(val), min: 0, max: 10} //0 and 10 used for illustration
     }
 }
 
@@ -26,13 +26,19 @@ impl Add for LimitVal {
 
     fn add(self, other: LimitVal) -> LimitVal {
         match self.val {
-            Some(x) => {
+            Ok(x) => {
                 match other.val {
-                    Some(y) => LimitVal::new(x+y), //both are Some
-                    None => LimitVal::new_none() //other.val is None
+                    Ok(y) => LimitVal::new(x+y), //both are Ok
+                    Err(y) => LimitVal::new(x+y)
                 }
             }
-            None => LimitVal::new_none() //self.val is None
+            Err(x) => {
+                match other.val {
+                    Ok(y) => LimitVal::new(x+y),
+                    Err(y) => LimitVal::new(x+y)
+                }
+            }
+          
         }
     }
 }
@@ -42,13 +48,19 @@ impl Sub for LimitVal {
 
     fn sub(self, other: LimitVal) -> LimitVal {
         match self.val {
-            Some(x) => {
+            Ok(x) => {
                 match other.val {
-                    Some(y) => LimitVal::new(x-y), //both are Some
-                    None => LimitVal::new_none() //other.val is None
+                    Ok(y) => LimitVal::new(x-y), //both are Ok
+                    Err(y) => LimitVal::new(x-y)
                 }
             }
-            None => LimitVal::new_none() //self.val is None
+            Err(x) => {
+                match other.val {
+                    Ok(y) => LimitVal::new(x-y),
+                    Err(y) => LimitVal::new(x-y)
+                }
+            }
+          
         }
     }
 }
@@ -58,13 +70,19 @@ impl Mul for LimitVal {
 
     fn mul(self, other: LimitVal) -> LimitVal {
         match self.val {
-            Some(x) => {
+            Ok(x) => {
                 match other.val {
-                    Some(y) => LimitVal::new(x*y), //both are Some
-                    None => LimitVal::new_none() //other.val is None
+                    Ok(y) => LimitVal::new(x*y), //both are Ok
+                    Err(y) => LimitVal::new(x*y)
                 }
             }
-            None => LimitVal::new_none() //self.val is None
+            Err(x) => {
+                match other.val {
+                    Ok(y) => LimitVal::new(x*y),
+                    Err(y) => LimitVal::new(x*y)
+                }
+            }
+          
         }
     }
 }
