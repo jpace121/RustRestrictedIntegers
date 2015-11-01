@@ -1,93 +1,72 @@
 use std::ops::{Add, Sub, Mul};
 
 pub struct LimitVal {
-    val : u8,
-    max : u8,
-    min : u8,
-    //Fix : Fn(u8) -> u8 //This causes issue with size not being implemented?
+    val : Option<u8>,
+    min : u8, 
+    max : u8
 }
 
 impl LimitVal {
-    fn new() -> LimitVal {
-            LimitVal{val: 0, max: 0, min: 0}
+    fn new(val:u8) -> LimitVal {
+        if(val > 0 && val < 10) { //0 and 10 replaced by macro for realz
+            LimitVal{val: Some(val), min: 0, max: 10} //0 and 10 used for illustration
+        } else {
+            LimitVal{val: None, min: 0, max: 10} //0 and 10 used for illustration
         }
-    fn max(&mut self , val:u8) -> &mut LimitVal{
-        self.max  = val;
-        self
     }
-    fn min(&mut self , val:u8) -> &mut LimitVal{
-        self.min  = val;
-        self
+    fn new_none() -> LimitVal {
+        //returns val as None, should be private, only for inside the library.
+        //I think that there has to be a better way to do this.
+            LimitVal{val: None, min: 0, max: 10} //0 and 10 used for illustration
     }
-    fn val(&mut self , val:u8) -> &mut LimitVal{
-        self.val  = val;
-        self
-    }
-    fn finalize(&self) -> LimitVal{
-        LimitVal{max: self.max, min: self.min, val: self.val}
-    }
-
 }
 
 impl Add for LimitVal {
-    type Output = Option<LimitVal>;
+    type Output = LimitVal;
 
-    fn add(self, other: LimitVal) -> Option<LimitVal> {
-        let mut result: LimitVal = LimitVal::new()
-                                  .min(self.min)
-                                  .max(self.max)
-                                  .val(0)
-                                  .finalize(); //hack?
-        result.val = self.val + other.val;
-        if result.val > result.max {
-            None
-        } else if result.val < result.min {
-            None
-        }else{
-            Some(result)
+    fn add(self, other: LimitVal) -> LimitVal {
+        match self.val {
+            Some(x) => {
+                match other.val {
+                    Some(y) => LimitVal::new(x+y), //both are Some
+                    None => LimitVal::new_none() //other.val is None
+                }
+            }
+            None => LimitVal::new_none() //self.val is None
         }
     }
 }
 
 impl Sub for LimitVal {
-    type Output = Option<LimitVal>;
+    type Output = LimitVal;
 
-    fn sub(self, other: LimitVal) -> Option<LimitVal> {
-        let mut result: LimitVal = LimitVal::new()
-                                  .min(self.min)
-                                  .max(self.max)
-                                  .val(0)
-                                  .finalize(); //hack?
-        result.val = self.val - other.val;
-        if result.val > result.max {
-            None
-        } else if result.val < result.min {
-            None
-        }else{
-            Some(result)
+    fn sub(self, other: LimitVal) -> LimitVal {
+        match self.val {
+            Some(x) => {
+                match other.val {
+                    Some(y) => LimitVal::new(x-y), //both are Some
+                    None => LimitVal::new_none() //other.val is None
+                }
+            }
+            None => LimitVal::new_none() //self.val is None
         }
     }
 }
 
 impl Mul for LimitVal {
-    type Output = Option<LimitVal>;
+    type Output = LimitVal;
 
-    fn mul(self, other: LimitVal) -> Option<LimitVal> {
-        let mut result: LimitVal = LimitVal::new()
-                                  .min(self.min)
-                                  .max(self.max)
-                                  .val(0)
-                                  .finalize(); //hack?
-        result.val = self.val * other.val;
-        if result.val > result.max {
-            None
-        } else if result.val < result.min {
-            None
-        }else{
-            Some(result)
+    fn mul(self, other: LimitVal) -> LimitVal {
+        match self.val {
+            Some(x) => {
+                match other.val {
+                    Some(y) => LimitVal::new(x*y), //both are Some
+                    None => LimitVal::new_none() //other.val is None
+                }
+            }
+            None => LimitVal::new_none() //self.val is None
         }
     }
-
 }
 
 #[cfg(test)]
@@ -101,27 +80,27 @@ mod tests {
         
     #[test]
     fn test_add() {
-        let x: LimitVal = LimitVal::new().max(10).min(0).val(2).finalize();
-        let y: LimitVal = LimitVal::new().max(10).min(0).val(3).finalize();
+        let x: LimitVal = LimitVal::new(2);
+        let y: LimitVal = LimitVal::new(3);
         
         let z = x + y;
-        assert_eq!(z.unwrap().val,5);
+        assert_eq!(z.val.unwrap(),5);
     }
 
     #[test]
     fn test_sub() {
-        let x: LimitVal = LimitVal::new().max(10).min(0).val(2).finalize();
-        let y: LimitVal = LimitVal::new().max(10).min(0).val(3).finalize();
+        let x: LimitVal = LimitVal::new(2);
+        let y: LimitVal = LimitVal::new(3);
         
         let z = y - x;
-        assert_eq!(z.unwrap().val,1);
+        assert_eq!(z.val.unwrap(),1);
     }
     #[test]
     fn test_mul() {
-        let x: LimitVal = LimitVal::new().max(10).min(0).val(2).finalize();
-        let y: LimitVal = LimitVal::new().max(10).min(0).val(3).finalize();
+        let x: LimitVal = LimitVal::new(2);
+        let y: LimitVal = LimitVal::new(3);
         
         let z = y * x;
-        assert_eq!(z.unwrap().val,6);
+        assert_eq!(z.val.unwrap(),6);
     }
 }
