@@ -13,7 +13,7 @@ impl Add for LimitVal {
     type Output = LimitVal;
 
     fn add(self, other: LimitVal) -> LimitVal {
-        let mut result: LimitVal = LimitVal{Val: 0, Max: 0, Min: 0}; //hack
+        let mut result: LimitVal = LimitVal::new().Min(0).Max(0).Val(0).finalize(); //hack
         result.Val = self.Val + other.Val;
         result.Max = if(self.Max > other.Max){
                         other.Max // choose the smallest one
@@ -29,6 +29,28 @@ impl Add for LimitVal {
     }
 }
 
+impl LimitVal {
+    fn new() -> LimitVal {
+            LimitVal{Val: 0, Max: 0, Min: 0}
+        }
+    fn Max(&mut self , val:u8) -> &mut LimitVal{
+        self.Max  = val;
+        self
+    }
+    fn Min(&mut self , val:u8) -> &mut LimitVal{
+        self.Min  = val;
+        self
+    }
+    fn Val(&mut self , val:u8) -> &mut LimitVal{
+        self.Val  = val;
+        self
+    }
+    fn finalize(&self) -> LimitVal{
+        LimitVal{Max: self.Max, Min: self.Min, Val: self.Val}
+    }
+
+}
+
 #[cfg(test)]
 mod tests {
     /*
@@ -40,8 +62,8 @@ mod tests {
         
     #[test]
     fn test_add() {
-        let mut x: LimitVal = LimitVal{Val: 2, Max: 10, Min: 0};
-        let mut y: LimitVal = LimitVal{Val: 3, Max: 10, Min: 0};
+        let x: LimitVal = LimitVal::new().Min(10).Max(0).Val(2).finalize();
+        let y: LimitVal = LimitVal::new().Min(10).Max(0).Val(3).finalize();
         
         let z = x + y;
         assert_eq!(z.Val,5);
