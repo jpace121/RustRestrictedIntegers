@@ -13,6 +13,8 @@ some inspiration onto how to solve that problem.
 
 I think the final solution will be to build a builder struct that builds the LimitVals
 I have now?
+Inspiration:
+https://doc.rust-lang.org/style/ownership/builders.html
 
 Something like:
 Builder(min, max, unique name?) -> Type(val, (min, max, unique name set))
