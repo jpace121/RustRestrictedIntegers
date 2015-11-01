@@ -45,8 +45,41 @@ impl Add for LimitVal {
                     }else{
                         other.min
                     };
+        if(result.val > result.max) {
+            result.val = result.max; //maybe should return option type?
+        } else if(result.val < result.min ){
+            result.val = result.min;
+        }
         result
     }
+}
+
+impl Sub for LimitVal {
+    type Output = LimitVal;
+
+    fn sub(self, other: LimitVal) -> LimitVal {
+        let mut result: LimitVal = LimitVal::new().min(0).max(0).val(0).finalize();//hack?
+        result.val = self.val - other.val;
+        result.max = if(self.max > other.max){
+                        other.max // choose the smallest one
+                    }else{
+                        self.max
+                    };
+        result.min = if(self.min > other.min){
+                        self.min // choose the biggest one
+                    }else{
+                        other.min
+                    };
+
+        if(result.val > result.max) {
+            result.val = result.max; //maybe should return option type?
+        } else if(result.val < result.min ){
+            result.val = result.min;
+        }
+        
+        result
+    }
+
 }
 
 
@@ -61,10 +94,19 @@ mod tests {
         
     #[test]
     fn test_add() {
-        let x: LimitVal = LimitVal::new().min(10).max(0).val(2).finalize();
-        let y: LimitVal = LimitVal::new().min(10).max(0).val(3).finalize();
+        let x: LimitVal = LimitVal::new().max(10).min(0).val(2).finalize();
+        let y: LimitVal = LimitVal::new().max(10).min(0).val(3).finalize();
         
         let z = x + y;
         assert_eq!(z.val,5);
+    }
+
+    #[test]
+    fn test_sub() {
+        let x: LimitVal = LimitVal::new().max(10).min(0).val(2).finalize();
+        let y: LimitVal = LimitVal::new().max(10).min(0).val(3).finalize();
+        
+        let z = y - x;
+        assert_eq!(z.val,1);
     }
 }
