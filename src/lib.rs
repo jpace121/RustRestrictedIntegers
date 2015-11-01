@@ -1,55 +1,54 @@
 use std::ops::{Add, Sub};
 
-#[derive(Debug,PartialEq,Eq)]
 pub struct LimitVal {
-    Val : u8,
-    Max : u8,
-    Min : u8,
-    //Fix : Fn(u8) -> u8 //This caused wierd issues, ignore for now.
+    val : u8,
+    max : u8,
+    min : u8,
+    //Fix : Fn(u8) -> u8 //This causes issue with size not being implemented?
 }
 
+impl LimitVal {
+    fn new() -> LimitVal {
+            LimitVal{val: 0, max: 0, min: 0}
+        }
+    fn max(&mut self , val:u8) -> &mut LimitVal{
+        self.max  = val;
+        self
+    }
+    fn min(&mut self , val:u8) -> &mut LimitVal{
+        self.min  = val;
+        self
+    }
+    fn val(&mut self , val:u8) -> &mut LimitVal{
+        self.val  = val;
+        self
+    }
+    fn finalize(&self) -> LimitVal{
+        LimitVal{max: self.max, min: self.min, val: self.val}
+    }
+
+}
 
 impl Add for LimitVal {
     type Output = LimitVal;
 
     fn add(self, other: LimitVal) -> LimitVal {
-        let mut result: LimitVal = LimitVal::new().Min(0).Max(0).Val(0).finalize(); //hack
-        result.Val = self.Val + other.Val;
-        result.Max = if(self.Max > other.Max){
-                        other.Max // choose the smallest one
+        let mut result: LimitVal = LimitVal::new().min(0).max(0).val(0).finalize(); //hack
+        result.val = self.val + other.val;
+        result.max = if(self.max > other.max){
+                        other.max // choose the smallest one
                     }else{
-                        self.Max
+                        self.max
                     };
-        result.Min = if(self.Min > other.Min){
-                        self.Min // choose the biggest one
+        result.min = if(self.min > other.min){
+                        self.min // choose the biggest one
                     }else{
-                        other.Min
+                        other.min
                     };
         result
     }
 }
 
-impl LimitVal {
-    fn new() -> LimitVal {
-            LimitVal{Val: 0, Max: 0, Min: 0}
-        }
-    fn Max(&mut self , val:u8) -> &mut LimitVal{
-        self.Max  = val;
-        self
-    }
-    fn Min(&mut self , val:u8) -> &mut LimitVal{
-        self.Min  = val;
-        self
-    }
-    fn Val(&mut self , val:u8) -> &mut LimitVal{
-        self.Val  = val;
-        self
-    }
-    fn finalize(&self) -> LimitVal{
-        LimitVal{Max: self.Max, Min: self.Min, Val: self.Val}
-    }
-
-}
 
 #[cfg(test)]
 mod tests {
@@ -62,10 +61,10 @@ mod tests {
         
     #[test]
     fn test_add() {
-        let x: LimitVal = LimitVal::new().Min(10).Max(0).Val(2).finalize();
-        let y: LimitVal = LimitVal::new().Min(10).Max(0).Val(3).finalize();
+        let x: LimitVal = LimitVal::new().min(10).max(0).val(2).finalize();
+        let y: LimitVal = LimitVal::new().min(10).max(0).val(3).finalize();
         
         let z = x + y;
-        assert_eq!(z.Val,5);
+        assert_eq!(z.val,5);
     }
 }
