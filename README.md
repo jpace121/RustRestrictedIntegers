@@ -11,14 +11,8 @@ would be qualities of the type, not the items, like they are now. I'm not sure h
 this. Hopefully, what I learn here will transfer over cleanish to that, while giving
 some inspiration onto how to solve that problem.
 
-I think the final solution will be to build a builder struct that builds the LimitVals
-I have now?
-Inspiration:
-https://doc.rust-lang.org/style/ownership/builders.html
-
-Something like:
-Builder(min, max, unique name?) -> Type(val, (min, max, unique name set))
-Operations done on Type.
+The aultimate design will use macros. The macro will build the type for you, then the
+items will just be memebers of the new type.
 
 (This also only works on uints now, eventually it should use generics.)
 
