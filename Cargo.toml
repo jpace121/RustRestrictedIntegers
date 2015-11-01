@@ -1,0 +1,4 @@
+[package]
+name = "RustRestrictedIntegers"
+version = "0.1.0"
+authors = ["Jimmy Pace <pacejimmy@yahoo.com>"]
