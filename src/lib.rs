@@ -27,7 +27,8 @@ impl LimitVal {
        self.val.expect(msg)
     }
 
-    fn map(&self, op:fn(u8) -> u8) -> LimitVal {
+    fn map<F>(&self, op:F) -> LimitVal
+        where F: Fn(u8) -> u8 {
         match self.val {
             Ok(x) => LimitVal::new(op(x)),
             Err(x) => LimitVal::new(op(x))
@@ -220,10 +221,7 @@ mod tests {
     #[test]
     fn test_map() {
         let x: LimitVal = LimitVal::new(2);
-        fn f (x:u8)-> u8 {
-            let y: u8 = x + 1;
-            y
-        };
+        let f = |t| { t + 1};
         
         let z = x.map(f);
         assert_eq!(z.unwrap(),3);
