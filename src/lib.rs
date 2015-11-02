@@ -7,6 +7,8 @@ pub struct LimitVal {
 }
 
 impl LimitVal {
+    
+    /// Makes a new value inside the range specified by the macro.
     fn new(val:u8) -> LimitVal {
         if val > 0 && val < 10 { //0 and 10 replaced by macro for realz
             LimitVal{val: Ok(val), min: 0, max: 10} //0 and 10 used for illustration
@@ -14,23 +16,37 @@ impl LimitVal {
             LimitVal{val: Err(val), min: 0, max: 10} //0 and 10 used for illustration
         }
     }
-
+    
+    /// Pulls out the inner value if Ok, else panics.
     fn unwrap(&self) -> u8 {
         self.val.unwrap()
     }
-
+    
+    /// Pulls out the inner value if Err, else panics.
     fn unwrap_err(&self) -> u8 {
         self.val.unwrap_err()
     }
-
+    
+    /// Pulls out the inner value if ok, else prints msg.
     fn expect(&self, msg: &str) -> u8 {
        self.val.expect(msg)
     }
 
+    /// Runs f on the current value.
     fn map<F>(&self, op:F) -> LimitVal
         where F: Fn(u8) -> u8 {
         match self.val {
             Ok(x) => LimitVal::new(op(x)),
+            Err(x) => LimitVal::new(op(x))
+        }
+
+    }
+
+    /// Runs f on val if val is err, else returns val.
+    fn fix<F>(&self, op:F) -> LimitVal
+        where F: Fn(u8) -> u8 {
+        match self.val {
+            Ok(x) => LimitVal::new(x),
             Err(x) => LimitVal::new(op(x))
         }
 
@@ -225,5 +241,18 @@ mod tests {
         
         let z = x.map(f);
         assert_eq!(z.unwrap(),3);
+    }
+    #[test]
+    fn test_fix() {
+        let x = LimitVal::new(20);
+        let f = | t : u8 | {
+            let mut z : u8 = t;
+            while z > x.max {
+                z = t / 10;
+            }
+            z
+        };
+        let y = x.fix(f);
+        assert_eq!(y.unwrap(),2);
     }
 }
