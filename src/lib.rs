@@ -1,4 +1,4 @@
-use std::ops::{Add, Sub, Mul};
+use std::ops::{Add, Sub, Mul,Div,Neg,Rem};
 
 pub struct LimitVal {
     val : Result<u8,u8>,
@@ -13,6 +13,10 @@ impl LimitVal {
         } else {
             LimitVal{val: Err(val), min: 0, max: 10} //0 and 10 used for illustration
         }
+    }
+
+    fn unwrap(&self) -> u8 {
+        self.val.unwrap()
     }
 }
 
@@ -60,6 +64,28 @@ impl Sub for LimitVal {
     }
 }
 
+impl Div for LimitVal {
+    type Output = LimitVal;
+
+    fn div(self, other: LimitVal) -> LimitVal {
+        match self.val {
+            Ok(x) => {
+                match other.val {
+                    Ok(y) => LimitVal::new(x/y), //both are Ok
+                    Err(y) => LimitVal::new(x/y)
+                }
+            }
+            Err(x) => {
+                match other.val {
+                    Ok(y) => LimitVal::new(x/y),
+                    Err(y) => LimitVal::new(x/y)
+                }
+            }
+          
+        }
+    }
+}
+
 impl Mul for LimitVal {
     type Output = LimitVal;
 
@@ -82,6 +108,41 @@ impl Mul for LimitVal {
     }
 }
 
+impl Rem for LimitVal {
+    type Output = LimitVal;
+
+    fn rem(self, other: LimitVal) -> LimitVal {
+        match self.val {
+            Ok(x) => {
+                match other.val {
+                    Ok(y) => LimitVal::new(x%y), //both are Ok
+                    Err(y) => LimitVal::new(x%y)
+                }
+            }
+            Err(x) => {
+                match other.val {
+                    Ok(y) => LimitVal::new(x%y),
+                    Err(y) => LimitVal::new(x%y)
+                }
+            }
+          
+        }
+    }
+}
+
+impl Neg for LimitVal {
+    type Output = LimitVal;
+
+    fn neg(self) -> LimitVal {
+        match self.val {
+            Ok(x) => LimitVal::new(-x),
+            Err(y) => LimitVal::new(-y)
+        }
+    }
+}
+
+
+
 #[cfg(test)]
 mod tests {
     /*
@@ -97,7 +158,7 @@ mod tests {
         let y: LimitVal = LimitVal::new(3);
         
         let z = x + y;
-        assert_eq!(z.val.unwrap(),5);
+        assert_eq!(z.unwrap(),5);
     }
 
     #[test]
@@ -106,7 +167,15 @@ mod tests {
         let y: LimitVal = LimitVal::new(3);
         
         let z = y - x;
-        assert_eq!(z.val.unwrap(),1);
+        assert_eq!(z.unwrap(),1);
+    }
+    #[test]
+    fn test_div() {
+        let x: LimitVal = LimitVal::new(4);
+        let y: LimitVal = LimitVal::new(2);
+
+        let z = x/y;
+        assert_eq!(z.unwrap(),2);
     }
     #[test]
     fn test_mul() {
@@ -114,6 +183,21 @@ mod tests {
         let y: LimitVal = LimitVal::new(3);
         
         let z = y * x;
-        assert_eq!(z.val.unwrap(),6);
+        assert_eq!(z.unwrap(),6);
+    }
+    #[test]
+    fn test_rem() {
+        let x: LimitVal = LimitVal::new(5);
+        let y: LimitVal = LimitVal::new(2);
+        
+        let z = x % y;
+        assert_eq!(z.unwrap(),1);
+    }
+    #[test]
+    #[should_panic]
+    fn test_neg() {
+        let x: LimitVal = LimitVal::new(2);
+        let z = -x;
+        assert_eq!(z.unwrap(), -2);
     }
 }
