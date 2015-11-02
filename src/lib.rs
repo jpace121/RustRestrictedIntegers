@@ -18,6 +18,23 @@ impl LimitVal {
     fn unwrap(&self) -> u8 {
         self.val.unwrap()
     }
+
+    fn unwrap_err(&self) -> u8 {
+        self.val.unwrap_err()
+    }
+
+    fn expect(&self, msg: &str) -> u8 {
+       self.val.expect(msg)
+    }
+
+    fn map(&self, op:fn(u8) -> u8) -> LimitVal {
+        match self.val {
+            Ok(x) => LimitVal::new(op(x)),
+            Err(x) => LimitVal::new(op(x))
+        }
+
+    }
+    
 }
 
 impl Add for LimitVal {
@@ -199,5 +216,16 @@ mod tests {
         let x: LimitVal = LimitVal::new(2);
         let z = -x;
         assert_eq!(z.unwrap(), -2);
+    }
+    #[test]
+    fn test_map() {
+        let x: LimitVal = LimitVal::new(2);
+        fn f (x:u8)-> u8 {
+            let y: u8 = x + 1;
+            y
+        };
+        
+        let z = x.map(f);
+        assert_eq!(z.unwrap(),3);
     }
 }
